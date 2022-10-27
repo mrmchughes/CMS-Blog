@@ -54,7 +54,7 @@ const LoginPage = ({ auth, handleChange }: LoginPageProps) => {
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
       reset({ username: "", password: "" });
-      navigate("/");
+      navigate("/posts");
     }
   }, [formState, reset]);
 

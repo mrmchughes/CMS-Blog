@@ -40,11 +40,11 @@ function App() {
     <BrowserRouter>
       <NavBar auth={auth} handleChange={handleChange} />
       <Routes>
-        <Route path="/" element={<HomePage posts={posts} />} />
         <Route
-          path="/login"
+          path="/"
           element={<LoginPage auth={auth} handleChange={handleChange} />}
         />
+        <Route path="/posts" element={<HomePage posts={posts} />} />
         <Route path="/createPost" element={<CreatePost />} />
         <Route path="/posts/:id" element={<PostPage />} />
         <Route path="*" element={<p> There is nothing here!!</p>} />

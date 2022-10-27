@@ -12,6 +12,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 import {
   createTheme,
   responsiveFontSizes,
@@ -35,6 +36,8 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
     setMobileOpen(!mobileOpen);
   };
 
+  const navigate = useNavigate();
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
@@ -49,16 +52,6 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
               to="/"
               sx={{ textAlign: "center" }}
             >
-              <ListItemText primary="Home" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={RouterLink}
-              to="/login"
-              sx={{ textAlign: "center" }}
-            >
               <ListItemText primary="Log In" />
             </ListItemButton>
           </ListItem>
@@ -69,7 +62,7 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
           <ListItem disablePadding>
             <ListItemButton
               component={RouterLink}
-              to="/"
+              to="/posts"
               sx={{ textAlign: "center" }}
             >
               <ListItemText primary="Home" />
@@ -94,6 +87,7 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
                 }).then(function () {
                   localStorage.clear();
                   handleChange();
+                  navigate("/");
                 });
               }}
               sx={{ textAlign: "center" }}
@@ -136,16 +130,6 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
                   sx={{ textAlign: "center" }}
                   size="large"
                 >
-                  Home
-                </Button>
-
-                <Button
-                  component={RouterLink}
-                  to="/login"
-                  color="inherit"
-                  sx={{ textAlign: "center" }}
-                  size="large"
-                >
                   Log In
                 </Button>
               </Box>
@@ -154,7 +138,7 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 <Button
                   component={RouterLink}
-                  to="/"
+                  to="/posts"
                   color="inherit"
                   sx={{ textAlign: "center" }}
                   size="large"
@@ -179,6 +163,7 @@ const NavBar = ({ auth, handleChange }: NavBarProps) => {
                     }).then(function () {
                       localStorage.clear();
                       handleChange();
+                      navigate("/");
                     });
                   }}
                   color="inherit"

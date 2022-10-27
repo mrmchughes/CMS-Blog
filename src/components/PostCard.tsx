@@ -62,7 +62,7 @@ const PostCard = ({ post }: PostCardProps) => {
               <Button
                 variant="contained"
                 component={RouterLink}
-                to={`posts/${post._id}`}
+                to={`${post._id}`}
               >
                 View Post
               </Button>
