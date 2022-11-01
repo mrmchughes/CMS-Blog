@@ -4,7 +4,7 @@ import HomePage from "./components/HomePage";
 import LoginPage from "./components/LoginPage";
 import NavBar from "./components/NavBar";
 import PostPage from "./components/PostPage";
-import CreatePost from "./components/CreatePost";
+import CreatePostPage from "./components/CreatePostPage";
 import "./styles/global.css";
 
 function App() {
@@ -44,9 +44,9 @@ function App() {
           path="/"
           element={<LoginPage auth={auth} handleChange={handleChange} />}
         />
-        <Route path="/posts" element={<HomePage posts={posts} />} />
-        <Route path="/createPost" element={<CreatePost />} />
-        <Route path="/posts/:id" element={<PostPage />} />
+        <Route path="/posts" element={<HomePage auth={auth} posts={posts} />} />
+        <Route path="/createPost" element={<CreatePostPage auth={auth} />} />
+        <Route path="/posts/:id" element={<PostPage auth={auth} />} />
         <Route path="*" element={<p> There is nothing here!!</p>} />
       </Routes>
     </BrowserRouter>

@@ -36,17 +36,22 @@ interface Post {
 }
 
 interface Comment {
+  _id: string;
   post: Object;
   user: String;
   timestamp: String;
   message: String;
 }
 
+interface PostPageProps {
+  auth: boolean;
+}
+
 let theme = createTheme();
 
 theme = responsiveFontSizes(theme);
 
-const PostPage = () => {
+const PostPage = ({ auth }: PostPageProps) => {
   const [post, setPost] = useState<Post>({
     _id: "",
     isPublished: true,
@@ -132,94 +137,125 @@ const PostPage = () => {
   }, [formState, reset]);
 
   return (
-    <div>
-      <Box sx={{ m: 5 }}>
-        <ThemeProvider theme={theme}>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
-            {post.title}
-          </Typography>
-          <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
-            Published by {post.user} on {post.timestamp}
-          </Typography>
-          <Divider />
-
-          <br />
-
-          <Typography variant="body1" sx={{ textAlign: "left" }}>
-            {post.message}
-          </Typography>
-
-          <br />
-
-          <Divider />
-        </ThemeProvider>
-      </Box>
-
-      <br />
-
-      <Box>
-        <ThemeProvider theme={theme}>
-          <Typography variant="h5" sx={{ textAlign: "left", m: 2 }}>
-            Comments: ({comments.length})
-          </Typography>
-        </ThemeProvider>
-
-        <Box
-          sx={{
-            margin: 2,
-          }}
-        >
-          {comments.map((comment, index) => (
-            <CommentBox key={index} comment={comment} />
-          ))}
-        </Box>
-      </Box>
-
-      <br />
-
-      <Box
-        sx={{
-          flexGrow: 1,
-          width: "50%",
-          margin: "0 auto",
-        }}
-      >
-        <ThemeProvider theme={theme}>
-          <Typography variant="h5" sx={{ textAlign: "center", m: 2.5 }}>
-            Add a comment:
-          </Typography>
-        </ThemeProvider>
-        <form>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <TextField
-              label="Comment"
-              multiline
-              rows={4}
-              placeholder="Comment"
-              {...register("message", {
-                required: true,
-                maxLength: 280,
-              })}
-            />
-            {errors.message?.type === "required" && (
-              <span role="alert">Please enter a message</span>
-            )}
-            {errors.message?.type === "maxLength" && (
-              <span role="alert">Message can only be up to 280 characters</span>
-            )}
-
-            <Button
-              variant="contained"
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              sx={{ m: 2 }}
+    <Box>
+      {!auth && (
+        <Box>
+          <ThemeProvider theme={theme}>
+            <Box
+              sx={{
+                boxShadow: 3,
+                width: "100%",
+                mb: 5,
+                p: 5,
+              }}
             >
-              Submit Comment
-            </Button>
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{
+                  flexGrow: 1,
+                  textAlign: "center",
+                }}
+              >
+                To access this page, please login as Admin.
+              </Typography>
+            </Box>
+          </ThemeProvider>
+        </Box>
+      )}
+      {auth && (
+        <Box>
+          <Box sx={{ m: 5 }}>
+            <ThemeProvider theme={theme}>
+              <Typography variant="h4" sx={{ textAlign: "center" }}>
+                {post.title}
+              </Typography>
+              <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
+                Published by {post.user} on {post.timestamp}
+              </Typography>
+              <Divider />
+
+              <br />
+
+              <Typography variant="body1" sx={{ textAlign: "left" }}>
+                {post.message}
+              </Typography>
+
+              <br />
+
+              <Divider />
+            </ThemeProvider>
           </Box>
-        </form>
-      </Box>
-    </div>
+
+          <br />
+
+          <Box>
+            <ThemeProvider theme={theme}>
+              <Typography variant="h5" sx={{ textAlign: "left", m: 2 }}>
+                Comments: ({comments.length})
+              </Typography>
+            </ThemeProvider>
+
+            <Box
+              sx={{
+                margin: 2,
+              }}
+            >
+              {comments.map((comment, index) => (
+                <CommentBox key={index} comment={comment} />
+              ))}
+            </Box>
+          </Box>
+
+          <br />
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              width: "50%",
+              margin: "0 auto",
+            }}
+          >
+            <ThemeProvider theme={theme}>
+              <Typography variant="h5" sx={{ textAlign: "center", m: 2.5 }}>
+                Add a comment:
+              </Typography>
+            </ThemeProvider>
+            <form>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <TextField
+                  label="Comment"
+                  multiline
+                  rows={4}
+                  placeholder="Comment"
+                  {...register("message", {
+                    required: true,
+                    maxLength: 280,
+                  })}
+                />
+                {errors.message?.type === "required" && (
+                  <span role="alert">Please enter a message</span>
+                )}
+                {errors.message?.type === "maxLength" && (
+                  <span role="alert">
+                    Message can only be up to 280 characters
+                  </span>
+                )}
+
+                <Button
+                  variant="contained"
+                  type="submit"
+                  onClick={handleSubmit(onSubmit)}
+                  sx={{ m: 2 }}
+                >
+                  Submit Comment
+                </Button>
+              </Box>
+            </form>
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 };
 

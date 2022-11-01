@@ -28,7 +28,7 @@ const LoginPage = ({ auth, handleChange }: LoginPageProps) => {
     handleSubmit,
     reset,
     formState,
-    formState: { isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm({
     defaultValues: { username: "", password: "" },
   });
@@ -79,8 +79,18 @@ const LoginPage = ({ auth, handleChange }: LoginPageProps) => {
               sx={{ m: 2 }}
               {...register("username", {
                 required: true,
+                validate: (username: string) => {
+                  if (process.env.REACT_APP_admin !== username) {
+                    return "Not Admin login";
+                  }
+                },
               })}
             />
+            {errors.username?.type === "validate" && (
+              <span role="alert">
+                Please enter Admin credentials to continue
+              </span>
+            )}
 
             <TextField
               label="Password"
@@ -89,8 +99,18 @@ const LoginPage = ({ auth, handleChange }: LoginPageProps) => {
               type="password"
               {...register("password", {
                 required: true,
+                validate: (password: string) => {
+                  if (process.env.REACT_APP_adminPassword !== password) {
+                    return "Not Admin login";
+                  }
+                },
               })}
             />
+            {errors.password?.type === "validate" && (
+              <span role="alert">
+                Please enter Admin credentials to continue
+              </span>
+            )}
 
             <Button
               variant="contained"
