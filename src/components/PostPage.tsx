@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import CommentBox from "../components/CommentBox";
 import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
@@ -63,6 +63,8 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   const [comments, setComments] = useState<Comment[]>([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchedPost();
   }, []);
@@ -105,7 +107,7 @@ const PostPage = ({ auth }: PostPageProps) => {
     formState: { errors, isSubmitSuccessful },
   } = useForm({ defaultValues: { username: "", message: "" } });
 
-  const onSubmit = (data: any) => {
+  const onCommentSubmit = (data: any) => {
     const input = data.message;
     const matches = matcher.getAllMatches(input);
 
@@ -128,6 +130,25 @@ const PostPage = ({ auth }: PostPageProps) => {
         Authorization: bearer,
       },
     });
+  };
+
+  const onDeletePost = (data: any) => {
+    const token = localStorage.getItem("token");
+    const bearer = `Bearer ${token}`;
+
+    fetch(`https://rest-api-for-blog.onrender.com/posts/${id}`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: bearer,
+      },
+    });
+
+    console.log(
+      "Deleted Post: " + post._id + " " + post.title + " " + post.message
+    );
+
+    navigate("/posts");
   };
 
   useEffect(() => {
@@ -168,7 +189,14 @@ const PostPage = ({ auth }: PostPageProps) => {
           <Box sx={{ m: 5 }}>
             <ThemeProvider theme={theme}>
               <Typography variant="h4" sx={{ textAlign: "center" }}>
-                {post.title}
+                {post.title}{" "}
+                <Button
+                  variant="contained"
+                  onClick={onDeletePost}
+                  sx={{ m: 2, textAlign: "right" }}
+                >
+                  Delete Post
+                </Button>
               </Typography>
               <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
                 Published by {post.user} on {post.timestamp}
@@ -202,7 +230,7 @@ const PostPage = ({ auth }: PostPageProps) => {
               }}
             >
               {comments.map((comment, index) => (
-                <CommentBox key={index} comment={comment} />
+                <CommentBox key={index} post={post} comment={comment} />
               ))}
             </Box>
           </Box>
@@ -245,7 +273,7 @@ const PostPage = ({ auth }: PostPageProps) => {
                 <Button
                   variant="contained"
                   type="submit"
-                  onClick={handleSubmit(onSubmit)}
+                  onClick={onCommentSubmit}
                   sx={{ m: 2 }}
                 >
                   Submit Comment

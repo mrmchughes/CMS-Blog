@@ -16,6 +16,15 @@ let theme = createTheme();
 
 theme = responsiveFontSizes(theme);
 
+interface Post {
+  _id: string;
+  isPublished: boolean;
+  title: string;
+  user: string;
+  timestamp: string;
+  message: string;
+}
+
 interface Comment {
   _id: string;
   post: Object;
@@ -25,19 +34,20 @@ interface Comment {
 }
 
 interface CommentBoxProps {
+  post: Post;
   comment: Comment;
 }
 
-const CommentBox = ({ comment }: CommentBoxProps) => {
+const CommentBox = ({ post, comment }: CommentBoxProps) => {
   const { handleSubmit } = useForm();
 
   const { id } = useParams();
 
-  const onSubmit = (data: any) => {
+  const onDeleteComment = (data: any) => {
     const token = localStorage.getItem("token");
     const bearer = `Bearer ${token}`;
 
-    fetch(`https://rest-api-for-blog.onrender.com/posts/${id}/comments/${id}`, {
+    fetch(`https://rest-api-for-blog.onrender.com/comments/${comment._id}`, {
       method: "delete",
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +55,14 @@ const CommentBox = ({ comment }: CommentBoxProps) => {
       },
     });
 
-    console.log("Deleted comment: " + comment.message);
+    console.log(
+      "Deleted comment from Post: " +
+        post._id +
+        " " +
+        comment.message +
+        " " +
+        comment._id
+    );
   };
 
   return (
@@ -68,11 +85,11 @@ const CommentBox = ({ comment }: CommentBoxProps) => {
         </CardContent>
         <Button
           variant="contained"
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSubmit(onDeleteComment)}
           sx={{ m: 2, textAlign: "right" }}
           key={comment._id}
         >
-          Delete
+          Delete Comment
         </Button>
       </Card>
     </Box>
