@@ -5,6 +5,11 @@ import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 import {
   createTheme,
@@ -63,6 +68,26 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   const [comments, setComments] = useState<Comment[]>([]);
 
+  const [openUpdate, setOpenUpdate] = React.useState(false);
+
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const handleClickOpenUpdate = () => {
+    setOpenUpdate(true);
+  };
+
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+  };
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,7 +130,26 @@ const PostPage = ({ auth }: PostPageProps) => {
     reset,
     formState,
     formState: { errors, isSubmitSuccessful },
-  } = useForm({ defaultValues: { username: "", message: "" } });
+  } = useForm({
+    defaultValues: {
+      username: "",
+      commentMessage: "",
+    },
+  });
+
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    reset: reset2,
+    formState: formState2,
+    formState: { errors: errors2, isSubmitSuccessful: isSubmitSuccessful2 },
+  } = useForm({
+    defaultValues: {
+      username: "",
+      title: "",
+      postMessage: "",
+    },
+  });
 
   const onCommentSubmit = (data: any) => {
     const input = data.message;
@@ -151,11 +195,42 @@ const PostPage = ({ auth }: PostPageProps) => {
     navigate("/posts");
   };
 
+  const onPostUpdateSubmit = (data: any) => {
+    const input = data.message;
+    const matches = matcher.getAllMatches(input);
+
+    const censoredMessage = censor.applyTo(input, matches);
+
+    data.message = censoredMessage;
+
+    const token = localStorage.getItem("token");
+    const bearer = `Bearer ${token}`;
+
+    const updatedPost = JSON.stringify(data);
+
+    fetch(`https://rest-api-for-blog.onrender.com/posts/${id}`, {
+      method: "put",
+      body: updatedPost,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: bearer,
+      },
+    });
+
+    handleCloseUpdate();
+  };
+
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
-      reset({ username: "", message: "" });
+      reset({ username: "", commentMessage: "" });
     }
   }, [formState, reset]);
+
+  useEffect(() => {
+    if (formState2.isSubmitSuccessful) {
+      reset2({ username: "", title: "", postMessage: "" });
+    }
+  }, [formState2, reset2]);
 
   return (
     <Box>
@@ -192,11 +267,105 @@ const PostPage = ({ auth }: PostPageProps) => {
                 {post.title}{" "}
                 <Button
                   variant="contained"
-                  onClick={onDeletePost}
-                  sx={{ m: 2, textAlign: "right" }}
+                  onClick={handleClickOpenUpdate}
+                  sx={{ m: 2 }}
+                >
+                  Update Post
+                </Button>
+                <Dialog
+                  open={openUpdate}
+                  onClose={handleCloseUpdate}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {"Are you sure you want to update this post?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      To update this post, please enter your updates below.
+                    </DialogContentText>
+
+                    <form key={2} onSubmit={handleSubmit2(onPostUpdateSubmit)}>
+                      <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <TextField
+                          label="Title"
+                          multiline
+                          rows={4}
+                          placeholder="Title"
+                          sx={{ m: 2 }}
+                          {...register2("title", {
+                            required: true,
+                          })}
+                        />
+                        {errors2.title?.type === "required" && (
+                          <span role="alert">Please enter a title</span>
+                        )}
+
+                        <TextField
+                          label="Post Message"
+                          multiline
+                          rows={4}
+                          placeholder="Post Message"
+                          sx={{ m: 2 }}
+                          {...register2("postMessage", {
+                            required: true,
+                          })}
+                        />
+                        {errors2.postMessage?.type === "required" && (
+                          <span role="alert">Please enter a message</span>
+                        )}
+                      </Box>
+
+                      <Button variant="contained" type="submit" sx={{ m: 2 }}>
+                        Confirm Update Post
+                      </Button>
+                    </form>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      variant="contained"
+                      onClick={handleCloseUpdate}
+                      sx={{ m: 2 }}
+                    >
+                      Cancel Update Post
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+                <Button
+                  variant="contained"
+                  onClick={handleClickOpenDelete}
+                  sx={{ m: 2 }}
                 >
                   Delete Post
                 </Button>
+                <Dialog
+                  open={openDelete}
+                  onClose={handleCloseDelete}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {"Are you sure you want to delete this post?"}
+                  </DialogTitle>
+                  <DialogActions>
+                    <Button
+                      variant="contained"
+                      onClick={handleCloseDelete}
+                      sx={{ m: 2 }}
+                    >
+                      Cancel Delete Post
+                    </Button>
+
+                    <Button
+                      variant="contained"
+                      onClick={onDeletePost}
+                      sx={{ m: 2 }}
+                    >
+                      Confirm Delete Post
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Typography>
               <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
                 Published by {post.user} on {post.timestamp}
@@ -249,22 +418,22 @@ const PostPage = ({ auth }: PostPageProps) => {
                 Add a comment:
               </Typography>
             </ThemeProvider>
-            <form>
+            <form key={1}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <TextField
                   label="Comment"
                   multiline
                   rows={4}
                   placeholder="Comment"
-                  {...register("message", {
+                  {...register("commentMessage", {
                     required: true,
                     maxLength: 280,
                   })}
                 />
-                {errors.message?.type === "required" && (
+                {errors.commentMessage?.type === "required" && (
                   <span role="alert">Please enter a message</span>
                 )}
-                {errors.message?.type === "maxLength" && (
+                {errors.commentMessage?.type === "maxLength" && (
                   <span role="alert">
                     Message can only be up to 280 characters
                   </span>
@@ -273,7 +442,7 @@ const PostPage = ({ auth }: PostPageProps) => {
                 <Button
                   variant="contained"
                   type="submit"
-                  onClick={onCommentSubmit}
+                  onClick={handleSubmit(onCommentSubmit)}
                   sx={{ m: 2 }}
                 >
                   Submit Comment

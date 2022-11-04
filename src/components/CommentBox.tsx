@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import TextField from "@mui/material/TextField";
+import DialogTitle from "@mui/material/DialogTitle";
 import { useForm } from "react-hook-form";
 import CardContent from "@mui/material/CardContent";
 import {
@@ -11,6 +17,19 @@ import {
   responsiveFontSizes,
   ThemeProvider,
 } from "@mui/material/styles";
+
+import {
+  RegExpMatcher,
+  TextCensor,
+  englishDataset,
+  englishRecommendedTransformers,
+} from "obscenity";
+
+const matcher = new RegExpMatcher({
+  ...englishDataset.build(),
+  ...englishRecommendedTransformers,
+});
+const censor = new TextCensor();
 
 let theme = createTheme();
 
@@ -39,9 +58,66 @@ interface CommentBoxProps {
 }
 
 const CommentBox = ({ post, comment }: CommentBoxProps) => {
-  const { handleSubmit } = useForm();
-
   const { id } = useParams();
+
+  const [openUpdate, setOpenUpdate] = useState(false);
+
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const handleClickOpenUpdate = () => {
+    setOpenUpdate(true);
+  };
+
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+  };
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm({ defaultValues: { username: "", message: "" } });
+
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      reset({ username: "", message: "" });
+    }
+  }, [formState, reset]);
+
+  const onCommentUpdateSubmit = (data: any) => {
+    const input = data.message;
+    const matches = matcher.getAllMatches(input);
+
+    const censoredMessage = censor.applyTo(input, matches);
+
+    data.message = censoredMessage;
+
+    const token = localStorage.getItem("token");
+    const bearer = `Bearer ${token}`;
+
+    const updatedComment = JSON.stringify(data);
+
+    fetch(`https://rest-api-for-blog.onrender.com/comments/${comment._id}`, {
+      method: "put",
+      body: updatedComment,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: bearer,
+      },
+    });
+
+    handleCloseUpdate();
+  };
 
   const onDeleteComment = (data: any) => {
     const token = localStorage.getItem("token");
@@ -83,14 +159,100 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
             </Typography>
           </ThemeProvider>
         </CardContent>
+
         <Button
           variant="contained"
-          onClick={handleSubmit(onDeleteComment)}
-          sx={{ m: 2, textAlign: "right" }}
-          key={comment._id}
+          onClick={handleClickOpenUpdate}
+          sx={{ m: 2 }}
+        >
+          Update Comment
+        </Button>
+        <Dialog
+          open={openUpdate}
+          onClose={handleCloseUpdate}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to update this comment?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To update this comment, please enter your updates below.
+            </DialogContentText>
+
+            <form>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <TextField
+                  label="Comment"
+                  multiline
+                  rows={4}
+                  placeholder="Comment"
+                  {...register("message", {
+                    required: true,
+                    maxLength: 280,
+                  })}
+                />
+                {errors.message?.type === "required" && (
+                  <span role="alert">Please enter a message</span>
+                )}
+                {errors.message?.type === "maxLength" && (
+                  <span role="alert">
+                    Message can only be up to 280 characters
+                  </span>
+                )}
+              </Box>
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={handleCloseUpdate}
+              sx={{ m: 2 }}
+            >
+              Cancel Update Comment
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleSubmit(onCommentUpdateSubmit)}
+              sx={{ m: 2 }}
+            >
+              Confirm Update Comment
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Button
+          variant="contained"
+          onClick={handleClickOpenDelete}
+          sx={{ m: 2 }}
         >
           Delete Comment
         </Button>
+        <Dialog
+          open={openDelete}
+          onClose={handleCloseDelete}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to delete this comment?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={handleCloseDelete}
+              sx={{ m: 2 }}
+            >
+              Cancel Delete Comment
+            </Button>
+
+            <Button variant="contained" onClick={onDeleteComment} sx={{ m: 2 }}>
+              Confirm Delete Comment
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Card>
     </Box>
   );
