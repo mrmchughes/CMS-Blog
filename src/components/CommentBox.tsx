@@ -86,11 +86,11 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
     reset,
     formState,
     formState: { errors, isSubmitSuccessful },
-  } = useForm({ defaultValues: { username: "", message: "" } });
+  } = useForm({ defaultValues: { username: "", commentMessage: "" } });
 
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
-      reset({ username: "", message: "" });
+      reset({ username: "", commentMessage: "" });
     }
   }, [formState, reset]);
 
@@ -188,15 +188,15 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
                   multiline
                   rows={4}
                   placeholder="Comment"
-                  {...register("message", {
+                  {...register("commentMessage", {
                     required: true,
                     maxLength: 280,
                   })}
                 />
-                {errors.message?.type === "required" && (
+                {errors.commentMessage?.type === "required" && (
                   <span role="alert">Please enter a message</span>
                 )}
-                {errors.message?.type === "maxLength" && (
+                {errors.commentMessage?.type === "maxLength" && (
                   <span role="alert">
                     Message can only be up to 280 characters
                   </span>

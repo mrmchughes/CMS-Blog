@@ -92,7 +92,7 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   useEffect(() => {
     fetchedPost();
-  }, []);
+  }, [post]);
 
   useEffect(() => {
     fetchedComments();
@@ -133,48 +133,10 @@ const PostPage = ({ auth }: PostPageProps) => {
   } = useForm({
     defaultValues: {
       username: "",
-      commentMessage: "",
-    },
-  });
-
-  const {
-    register: register2,
-    handleSubmit: handleSubmit2,
-    reset: reset2,
-    formState: formState2,
-    formState: { errors: errors2, isSubmitSuccessful: isSubmitSuccessful2 },
-  } = useForm({
-    defaultValues: {
-      username: "",
       title: "",
       postMessage: "",
     },
   });
-
-  const onCommentSubmit = (data: any) => {
-    const input = data.message;
-    const matches = matcher.getAllMatches(input);
-
-    const censoredMessage = censor.applyTo(input, matches);
-
-    data.message = censoredMessage;
-
-    setComments([...comments, data]);
-
-    const token = localStorage.getItem("token");
-    const bearer = `Bearer ${token}`;
-
-    const newComment = JSON.stringify(data);
-
-    fetch(`https://rest-api-for-blog.onrender.com/posts/${id}/comments`, {
-      method: "post",
-      body: newComment,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: bearer,
-      },
-    });
-  };
 
   const onDeletePost = (data: any) => {
     const token = localStorage.getItem("token");
@@ -222,15 +184,9 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
-      reset({ username: "", commentMessage: "" });
+      reset({ username: "", title: "", postMessage: "" });
     }
   }, [formState, reset]);
-
-  useEffect(() => {
-    if (formState2.isSubmitSuccessful) {
-      reset2({ username: "", title: "", postMessage: "" });
-    }
-  }, [formState2, reset2]);
 
   return (
     <Box>
@@ -286,7 +242,7 @@ const PostPage = ({ auth }: PostPageProps) => {
                       To update this post, please enter your updates below.
                     </DialogContentText>
 
-                    <form key={2} onSubmit={handleSubmit2(onPostUpdateSubmit)}>
+                    <form>
                       <Box sx={{ display: "flex", flexDirection: "column" }}>
                         <TextField
                           label="Title"
@@ -294,11 +250,11 @@ const PostPage = ({ auth }: PostPageProps) => {
                           rows={4}
                           placeholder="Title"
                           sx={{ m: 2 }}
-                          {...register2("title", {
+                          {...register("title", {
                             required: true,
                           })}
                         />
-                        {errors2.title?.type === "required" && (
+                        {errors.title?.type === "required" && (
                           <span role="alert">Please enter a title</span>
                         )}
 
@@ -308,18 +264,14 @@ const PostPage = ({ auth }: PostPageProps) => {
                           rows={4}
                           placeholder="Post Message"
                           sx={{ m: 2 }}
-                          {...register2("postMessage", {
+                          {...register("postMessage", {
                             required: true,
                           })}
                         />
-                        {errors2.postMessage?.type === "required" && (
+                        {errors.postMessage?.type === "required" && (
                           <span role="alert">Please enter a message</span>
                         )}
                       </Box>
-
-                      <Button variant="contained" type="submit" sx={{ m: 2 }}>
-                        Confirm Update Post
-                      </Button>
                     </form>
                   </DialogContent>
                   <DialogActions>
@@ -329,6 +281,13 @@ const PostPage = ({ auth }: PostPageProps) => {
                       sx={{ m: 2 }}
                     >
                       Cancel Update Post
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleSubmit(onPostUpdateSubmit)}
+                      sx={{ m: 2 }}
+                    >
+                      Confirm Update Post
                     </Button>
                   </DialogActions>
                 </Dialog>
@@ -402,53 +361,6 @@ const PostPage = ({ auth }: PostPageProps) => {
                 <CommentBox key={index} post={post} comment={comment} />
               ))}
             </Box>
-          </Box>
-
-          <br />
-
-          <Box
-            sx={{
-              flexGrow: 1,
-              width: "50%",
-              margin: "0 auto",
-            }}
-          >
-            <ThemeProvider theme={theme}>
-              <Typography variant="h5" sx={{ textAlign: "center", m: 2.5 }}>
-                Add a comment:
-              </Typography>
-            </ThemeProvider>
-            <form key={1}>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <TextField
-                  label="Comment"
-                  multiline
-                  rows={4}
-                  placeholder="Comment"
-                  {...register("commentMessage", {
-                    required: true,
-                    maxLength: 280,
-                  })}
-                />
-                {errors.commentMessage?.type === "required" && (
-                  <span role="alert">Please enter a message</span>
-                )}
-                {errors.commentMessage?.type === "maxLength" && (
-                  <span role="alert">
-                    Message can only be up to 280 characters
-                  </span>
-                )}
-
-                <Button
-                  variant="contained"
-                  type="submit"
-                  onClick={handleSubmit(onCommentSubmit)}
-                  sx={{ m: 2 }}
-                >
-                  Submit Comment
-                </Button>
-              </Box>
-            </form>
           </Box>
         </Box>
       )}
