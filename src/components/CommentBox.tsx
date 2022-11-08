@@ -86,13 +86,26 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
     reset,
     formState,
     formState: { errors, isSubmitSuccessful },
-  } = useForm({ defaultValues: { username: "", commentMessage: "" } });
+  } = useForm({ defaultValues: { username: "", message: "" } });
 
   useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ username: "", commentMessage: "" });
-    }
-  }, [formState, reset]);
+    defaultFormInputValues();
+  }, []);
+
+  const defaultFormInputValues = () => {
+    fetch(
+      `https://rest-api-for-blog.onrender.com/posts/${id}/comments/${comment._id}`,
+      {
+        mode: "cors",
+      }
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (response) {
+        reset(response);
+      });
+  };
 
   const onCommentUpdateSubmit = (data: any) => {
     const input = data.message;
@@ -188,15 +201,15 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
                   multiline
                   rows={4}
                   placeholder="Comment"
-                  {...register("commentMessage", {
+                  {...register("message", {
                     required: true,
                     maxLength: 280,
                   })}
                 />
-                {errors.commentMessage?.type === "required" && (
+                {errors.message?.type === "required" && (
                   <span role="alert">Please enter a message</span>
                 )}
-                {errors.commentMessage?.type === "maxLength" && (
+                {errors.message?.type === "maxLength" && (
                   <span role="alert">
                     Message can only be up to 280 characters
                   </span>

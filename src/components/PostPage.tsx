@@ -74,6 +74,7 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   const handleClickOpenUpdate = () => {
     setOpenUpdate(true);
+    console.log(post.user + " " + post.title + " " + post.message);
   };
 
   const handleCloseUpdate = () => {
@@ -97,6 +98,10 @@ const PostPage = ({ auth }: PostPageProps) => {
   useEffect(() => {
     fetchedComments();
   }, [comments]);
+
+  useEffect(() => {
+    defaultFormInputValues();
+  }, []);
 
   const fetchedPost = () => {
     fetch(`https://rest-api-for-blog.onrender.com/posts/${id}`, {
@@ -122,6 +127,18 @@ const PostPage = ({ auth }: PostPageProps) => {
       });
   };
 
+  const defaultFormInputValues = () => {
+    fetch(`https://rest-api-for-blog.onrender.com/posts/${id}`, {
+      mode: "cors",
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (response) {
+        reset(response);
+      });
+  };
+
   const { id } = useParams();
 
   const {
@@ -132,9 +149,8 @@ const PostPage = ({ auth }: PostPageProps) => {
     formState: { errors, isSubmitSuccessful },
   } = useForm({
     defaultValues: {
-      username: "",
       title: "",
-      postMessage: "",
+      message: "",
     },
   });
 
@@ -181,12 +197,6 @@ const PostPage = ({ auth }: PostPageProps) => {
 
     handleCloseUpdate();
   };
-
-  useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ username: "", title: "", postMessage: "" });
-    }
-  }, [formState, reset]);
 
   return (
     <Box>
@@ -264,11 +274,11 @@ const PostPage = ({ auth }: PostPageProps) => {
                           rows={4}
                           placeholder="Post Message"
                           sx={{ m: 2 }}
-                          {...register("postMessage", {
+                          {...register("message", {
                             required: true,
                           })}
                         />
-                        {errors.postMessage?.type === "required" && (
+                        {errors.message?.type === "required" && (
                           <span role="alert">Please enter a message</span>
                         )}
                       </Box>
