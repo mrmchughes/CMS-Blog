@@ -1,46 +1,43 @@
-# Getting Started with Create React App
+# CMS-Blog
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I developed this CMS for my Blog as part of The Odin Project's Fullstack [curriculum](https://www.theodinproject.com/lessons/nodejs-blog-api).
+Building an entire blogging site from the ground up has been a fantastic way to test my Full Stack Web Development skills! I'm quite pleased that I managed to get a profanity filter working.
 
-## Available Scripts
+[Live CMS](https://whose-blog-is-this-anyway-admin.onrender.com/)
 
-In the project directory, you can run:
+[User Front End Repo](https://github.com/mrmchughes/User-Blog) 
 
-### `npm start`
+[API Repo](https://github.com/mrmchughes/REST-API-for-Blog)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Screenshots
+[Home Page] ![image](https://user-images.githubusercontent.com/10659805/200913869-0d5c6ea8-c93d-4cce-a541-3ec933b2476a.png)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+[Create a Post Page] ![image](https://user-images.githubusercontent.com/10659805/200914112-95ccadff-6d0b-41af-84dc-37dc075c9dd4.png)
 
-### `npm test`
+[Post Screenshot] ![image](https://user-images.githubusercontent.com/10659805/196775463-59b616d5-65e9-4cc1-8ab8-adcfc99ce04f.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+[Log In Page] ![image](https://user-images.githubusercontent.com/10659805/196775591-bc85e88a-bb47-4c42-be56-89bd006e2d50.png)
 
-### `npm run build`
+## Built With
+<img src="https://github.com/devicons/devicon/blob/master/icons/react/react-original-wordmark.svg"  title="React" alt="React" width="40" height="40"/>&nbsp;
+<img src="https://github.com/devicons/devicon/blob/master/icons/typescript/typescript-original.svg"  title="TypeScript" alt="TypeScript" width="40" height="40"/>&nbsp;
+<img src="https://github.com/devicons/devicon/blob/master/icons/materialui/materialui-original.svg"  title="MaterialUI" alt="MaterialUI" width="40" height="40"/>&nbsp;
+<img src="https://github.com/devicons/devicon/blob/master/icons/javascript/javascript-original.svg" title="JavaScript" alt="JavaScript" width="40" height="40"/>&nbsp;
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Author
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Michael Hughes**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Github https://github.com/mrmchughes
+- Email mrmchughes27@gmail.com
+- Linkedin https://www.linkedin.com/in/michaelhughes27/
 
-### `npm run eject`
+Contributions, issues, and feature requests are welcome!
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Give a ⭐️ if you like this project!
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Copyright © 2022 [Michael Hughes](https://github.com/mrmchughes).
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project is MIT licensed.
