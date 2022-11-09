@@ -74,7 +74,6 @@ const PostPage = ({ auth }: PostPageProps) => {
 
   const handleClickOpenUpdate = () => {
     setOpenUpdate(true);
-    console.log(post.user + " " + post.title + " " + post.message);
   };
 
   const handleCloseUpdate = () => {
@@ -165,10 +164,6 @@ const PostPage = ({ auth }: PostPageProps) => {
         Authorization: bearer,
       },
     });
-
-    console.log(
-      "Deleted Post: " + post._id + " " + post.title + " " + post.message
-    );
 
     navigate("/posts");
   };

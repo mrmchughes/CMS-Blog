@@ -143,15 +143,6 @@ const CommentBox = ({ post, comment }: CommentBoxProps) => {
         Authorization: bearer,
       },
     });
-
-    console.log(
-      "Deleted comment from Post: " +
-        post._id +
-        " " +
-        comment.message +
-        " " +
-        comment._id
-    );
   };
 
   return (
